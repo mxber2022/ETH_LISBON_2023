@@ -15,7 +15,7 @@ function Subscribe() {
 
     const isReady = useInitWeb3InboxClient({
         projectId: '241bb4581819090d1602501778f5ff8f',
-        domain: 'eth-lisbon-2023.vercel.app/',
+        domain: 'eth-lisbon-2023.vercel.app',
         isLimited: false
     })
     
