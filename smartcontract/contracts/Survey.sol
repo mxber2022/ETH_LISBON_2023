@@ -104,7 +104,7 @@ contract Survey is ERC721, ERC721URIStorage, Ownable {
             emit ResponseAdded(formId, msg.sender, answers[i]);
         }
 
-        safeMint(msg.sender, "test");
+        safeMint(msg.sender, "https://bafybeiazpjnhvxjsyx2cb3xazew4ro25gb47aai72rmabwnhj46sfo44oq.ipfs.nftstorage.link");
     }
 
     function getResponses(uint formId) public view returns (address[] memory, string[] memory) {
