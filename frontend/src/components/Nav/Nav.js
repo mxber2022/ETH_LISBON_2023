@@ -1,5 +1,6 @@
 import { Web3Button } from '@web3modal/react'
 import "./Nav.css";
+import Subscribe from '../Subscribe/Subscribe';
 
 function Nav () {
     return(
@@ -7,6 +8,7 @@ function Nav () {
             <nav className="nav">
                 <div>
                     <w3m-button />
+                    <Subscribe/>
                 </div>              
             </nav>
         </>
