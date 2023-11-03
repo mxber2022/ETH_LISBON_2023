@@ -147,7 +147,8 @@ function Subscribe() {
                         <div>You are subscribed</div>
                          {/*<div>Subscription: {JSON.stringify(subscription)}</div>*/}
                         
-                        <div>Messages: {JSON.stringify(messages)}</div>
+                        <div>Message from: {messages[0]['message']['title']}</div>
+                        <div>Message: {messages[0]['message']['body']}</div>
                       </>
                     )}
                   </>
