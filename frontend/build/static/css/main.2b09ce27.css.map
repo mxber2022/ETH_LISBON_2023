@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.2b09ce27.css","mappings":"AAAA,KACI,YAAa,CACb,kBAAmB,CACnB,sBACJ","sources":["components/Nav/Nav.css"],"sourcesContent":[".nav {\n    display: flex;\n    flex-direction: row;\n    justify-content: center;\n}"],"names":[],"sourceRoot":""}
