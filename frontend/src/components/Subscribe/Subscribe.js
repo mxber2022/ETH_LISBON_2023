@@ -125,8 +125,8 @@ function Subscribe() {
               <div></div>
             ) : (
               <>
-                <div>Address: {address}</div>
-                <div>Account ID: {account}</div>
+                
+            
                 {!isRegistered ? (
                   <div>
                     To manage notifications, sign and register an identity key:&nbsp;

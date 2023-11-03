@@ -148,5 +148,15 @@ contract Survey is ERC721, ERC721URIStorage, Ownable {
         return questionTexts;
     }
 
+    function getUserProfile(address userAddress) public view returns (string memory name, string memory description) {
+        require(bytes(userProfiles[userAddress].name).length > 0, "User profile not found");
+        
+        UserProfile storage profile = userProfiles[userAddress];
+        return (profile.name, profile.description);
+    }
+
+    function doesUserProfileExist(address userAddress) public view returns (bool) {
+        return bytes(userProfiles[userAddress].name).length > 0;
+    }
 }
 
