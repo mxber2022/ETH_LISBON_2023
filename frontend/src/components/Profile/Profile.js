@@ -133,15 +133,15 @@ function Profile() {
        
         /* */
    
-        const { data: getQuestionsForForm } = useContractRead({
-            address: configFile.CONTRACT_ADDRESS,
-            abi: abi,
-            functionName: 'getQuestionsForForm',
-            args: [1],
-            onSuccess(data) {
-                console.log('Success', data)
-              },
-        })
+    const { data: getQuestionsForForm } = useContractRead({
+        address: configFile.CONTRACT_ADDRESS,
+        abi: abi,
+        functionName: 'getQuestionsForForm',
+        args: [2],
+        onSuccess(data) {
+            console.log('Success', data)
+        },
+    })
 
     console.log("getQuestionsForForm: ", getQuestionsForForm);
 
