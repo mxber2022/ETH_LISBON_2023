@@ -14,6 +14,7 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { IExecDataProtector } from "@iexec/dataprotector";
 import Safex from './components/Safex/Safex';
+import Iexec from './components/Iexec/Iexec';
 
 const chains = [arbitrum, mainnet, polygon, goerli];
 const projectId = '241bb4581819090d1602501778f5ff8f';
@@ -76,7 +77,8 @@ function App() {
       <WagmiConfig config={wagmiConfig}>
         <button onClick={protectData}>Protect Data</button>
         <Nav />
-        <Profile /><br/><br/>
+        <Profile />
+        <Iexec /><br/><br/>
         <Safex /> 
       </WagmiConfig>
     </>
