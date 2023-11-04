@@ -50,7 +50,6 @@ function Profile() {
         args: [address],
     })
     
-        
 
     console.log("contractRead", profiledata);
 
@@ -72,7 +71,7 @@ function Profile() {
         dynamic question
     */
 
-    const [questions, setQuestions] = useState(['']);
+    const [questions, setQuestions] = useState(new Array().fill(''));
 
     const addQuestion = () => {
         setQuestions([...questions, '']);
@@ -97,13 +96,13 @@ function Profile() {
     const [formTitle, setFormTitle] = React.useState(''); // New state for survey form title
     const debouncedFormTitle = useDebounce(formTitle);
 
-    const [question, setQuestion] = useState(new Array(3).fill(''))
+    const [question, setQuestion] = useState(new Array(3).fill(''));
 
     const { config: writeQuestion } = usePrepareContractWrite({
         address: configFile.CONTRACT_ADDRESS,
         abi: abi,
         functionName: 'createSurveyForm',
-        args: [debouncedFormTitle, question],
+        args: [debouncedFormTitle, questions],
     });
 
     const { data: writeQuestion_data, isLoading: writeQuestion_isloading, isSuccess: writeQuestion_isSuccess, write: writeQuestion_write } = useContractWrite(writeQuestion);
@@ -111,12 +110,11 @@ function Profile() {
     const handleSubmit = (e) => {
         e.preventDefault();
     
-        const allQuestions = questions.filter((question) => question.trim() !== '');
-        console.log("allQuestions: ", allQuestions);
+        
+        console.log("allQuestions: ", question);
       
-        setQuestion(allQuestions);
+        setQuestion(questions);
         console.log("questions: ", questions);
-        console.log("questions: ", typeof(questions));
     
         // Perform the contract write operation
         writeQuestion_write?.();
@@ -132,13 +130,19 @@ function Profile() {
         get all question
     */
 
-    const { data: getQuestionsForForm } = useContractRead({
-        address: configFile.CONTRACT_ADDRESS,
-        abi: abi,
-        functionName: 'getQuestionsForForm',
-        args: [0],
-    })
-    
+       
+        /* 
+   
+        const { data: getQuestionsForForm } = useContractRead({
+            address: configFile.CONTRACT_ADDRESS,
+            abi: abi,
+            functionName: 'getQuestionsForForm',
+            args: [1],
+            onSuccess(data) {
+                console.log('Success', data)
+              },
+        })
+
     console.log("getQuestionsForForm: ", getQuestionsForForm);
     const [answers, setAnswers] = useState(new Array(getQuestionsForForm.length).fill(''));
 
@@ -163,7 +167,7 @@ function Profile() {
         e.preventDefault();
         addResponses_write?.();
     };
-
+*/
 
 /****************************************************************/
     return (
@@ -287,7 +291,7 @@ function Profile() {
             
             }
 
-<div>
+{/*<div>
       <h2>Survey Form</h2>
       <form>
         {getQuestionsForForm.map((question, index) => (
@@ -303,7 +307,7 @@ function Profile() {
         ))}
         <button onClick={handleSubmitAnswer}>Submit</button>
       </form>
-    </div>
+        </div>*/}
 
 </>
 

@@ -117,6 +117,7 @@ function Subscribe() {
 
     return(
         <>
+        
         {!isReady ? (
           <div>Loading client...</div>
         ) : (
@@ -147,8 +148,8 @@ function Subscribe() {
                         <div>You are subscribed</div>
                          {/*<div>Subscription: {JSON.stringify(subscription)}</div>*/}
                         
-                        <div>Message from: {messages[0]['message']['title']}</div>
-                        <div>Message: {messages[0]['message']['body']}</div>
+                        <div>Message from: {messages[messages.length-1]['message']['title']}</div>
+                        <div>Message: {messages[messages.length-1]['message']['body']}</div>
                       </>
                     )}
                   </>

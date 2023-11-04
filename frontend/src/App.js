@@ -12,9 +12,37 @@ import { publicProvider } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
+import { IExecDataProtector } from "@iexec/dataprotector";
+import Safex from './components/Safex/Safex';
 
 const chains = [arbitrum, mainnet, polygon, goerli];
 const projectId = '241bb4581819090d1602501778f5ff8f';
+
+
+
+async function protectData() {
+  
+  const web3Provider = window.ethereum;
+  console.log(web3Provider);
+  const dataProtector = new IExecDataProtector(web3Provider);
+  console.log(dataProtector);
+  try{
+    const protectedData =  await dataProtector.protectData({
+      data: {
+          email: 'crytrap05@gmail.com'
+      }
+    });
+  
+    console.log("protectedData: ", protectedData);
+  }
+  catch(e) {
+    console.log("E: ", e);
+  }
+  
+}
+
+
+
 
 const { publicClient } = configureChains(
   chains, 
@@ -46,8 +74,10 @@ function App() {
   return (
     <>
       <WagmiConfig config={wagmiConfig}>
-        <Nav/>
-        <Profile/>
+        <button onClick={protectData}>Protect Data</button>
+        <Nav />
+        <Profile /><br/><br/>
+        <Safex /> 
       </WagmiConfig>
     </>
   );
