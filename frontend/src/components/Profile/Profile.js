@@ -4,7 +4,8 @@ import configFile from '../../Config.json';
 import { abi } from "./abi";
 import { useContractWrite, usePrepareContractWrite, useContractRead } from 'wagmi';
 import { useAccount } from 'wagmi';
-
+import { useDebounce } from 'use-debounce';
+import { ethers } from "ethers"
 
 function Profile() {
 
@@ -56,6 +57,9 @@ function Profile() {
 
 
 
+    /*
+        choices
+    */
 
     const [choice, setChoice] = useState('');
 
@@ -64,6 +68,104 @@ function Profile() {
         setChoice(newChoice);
     }
 
+    /*
+        dynamic question
+    */
+
+    const [questions, setQuestions] = useState(['']);
+
+    const addQuestion = () => {
+        setQuestions([...questions, '']);
+    };
+
+    const removeQuestion = (index) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions.splice(index, 1);
+        setQuestions(updatedQuestions);
+    };
+
+    const handleQuestionChange = (index, event) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[index] = event.target.value;
+        setQuestions(updatedQuestions);
+    };
+
+    /*
+        contract write
+    */
+
+    const [formTitle, setFormTitle] = React.useState(''); // New state for survey form title
+    const debouncedFormTitle = useDebounce(formTitle);
+
+    const [question, setQuestion] = useState(new Array(3).fill(''))
+
+    const { config: writeQuestion } = usePrepareContractWrite({
+        address: configFile.CONTRACT_ADDRESS,
+        abi: abi,
+        functionName: 'createSurveyForm',
+        args: [debouncedFormTitle, question],
+    });
+
+    const { data: writeQuestion_data, isLoading: writeQuestion_isloading, isSuccess: writeQuestion_isSuccess, write: writeQuestion_write } = useContractWrite(writeQuestion);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+    
+        const allQuestions = questions.filter((question) => question.trim() !== '');
+        console.log("allQuestions: ", allQuestions);
+      
+        setQuestion(allQuestions);
+        console.log("questions: ", questions);
+        console.log("questions: ", typeof(questions));
+    
+        // Perform the contract write operation
+        writeQuestion_write?.();
+    };
+
+/****************************************************************/
+    /*
+        add response
+    */
+    
+
+     /*
+        get all question
+    */
+
+    const { data: getQuestionsForForm } = useContractRead({
+        address: configFile.CONTRACT_ADDRESS,
+        abi: abi,
+        functionName: 'getQuestionsForForm',
+        args: [0],
+    })
+    
+    console.log("getQuestionsForForm: ", getQuestionsForForm);
+    const [answers, setAnswers] = useState(new Array(getQuestionsForForm.length).fill(''));
+
+    const { config: config_addResponses } = usePrepareContractWrite({
+        address: configFile.CONTRACT_ADDRESS,
+        abi: abi,
+        functionName: 'addResponses',
+        args: [name, answers],
+    });
+    
+    const { data: addResponses_data, isLoading: addResponses_isLoading, isSuccess:addResponses_isSuccess, write: addResponses_write } = useContractWrite(config_addResponses);
+
+    
+
+    const handleAnswerChange = (index, event) => {
+        const newAnswers = [...answers];
+        newAnswers[index] = event.target.value;
+        setAnswers(newAnswers);
+    };
+
+    const handleSubmitAnswer = (e) => {
+        e.preventDefault();
+        addResponses_write?.();
+    };
+
+
+/****************************************************************/
     return (
         <>
 
@@ -99,13 +201,58 @@ function Profile() {
                             </label>
                         </form>
 
-                        {choice === "Yes" && <p>Hello</p>}
+                        {
+
+                            choice === "Yes" && 
+                            <>
+
+                            <div>
+                                <label htmlFor="formTitle">Survey Form Title:</label>
+                                <input
+                                    type="text"
+                                    id="formTitle"
+                                    placeholder="Enter the form title"
+                                    value={formTitle}
+                                    onChange={(e) => setFormTitle(e.target.value)}
+                                />
+                            </div>
+
+                                <div>
+                                    <form onSubmit={handleSubmit}>
+                                        {questions.map((question, index) => (
+                                        <div key={index}>
+                                            <input
+                                            type="text"
+                                            value={question}
+                                            onChange={(e) => handleQuestionChange(index, e)}
+                                            placeholder="Question"
+                                            />
+                                            <button type="button" onClick={() => removeQuestion(index)}>
+                                            Remove
+                                            </button>
+                                        </div>
+                                        ))}
+                                        <button type="button" onClick={addQuestion}>
+                                        Add Question
+                                        </button>
+                                        <button type="submit">Submit</button>
+                                    </form>
+                                </div>
+
+                                {isLoading && <div>Check Wallet</div>}
+                                {writeQuestion_isSuccess && <div>Transaction: {JSON.stringify(writeQuestion_data)}</div>}
+                            </>
+                        
+                        }
                     </div>
                     
                 </> 
                 : 
                 <>
-                    <div>
+               
+                    {
+                         address==undefined? <></>:<>
+                        <div>
                         <label htmlFor="name">Name:</label>
                         <input
                             type="text"
@@ -114,25 +261,50 @@ function Profile() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                    </div>
+                        </div>
 
-                    <div>
-                        <label htmlFor="description">Description:</label>
-                        <input
-                            type="text"
-                            id="description"
-                            placeholder="Enter a description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </div>
+                        <div>
+                            <label htmlFor="description">Description:</label>
+                            <input
+                                type="text"
+                                id="description"
+                                placeholder="Enter a description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </div>
 
-                    <button disabled={!write} onClick={handleCreateProfile}> Create Profile </button>
-                    {isLoading && <div>Check Wallet</div>}
-                    {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
+                        <button disabled={!write} onClick={handleCreateProfile}> Create Profile </button>
+                        {isLoading && <div>Check Wallet</div>}
+                        {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
+
+                    </>
+                    }
                 </>
+
+
+
             
             }
+
+<div>
+      <h2>Survey Form</h2>
+      <form>
+        {getQuestionsForForm.map((question, index) => (
+          <div key={index}>
+            <p>{question}</p>
+            <input
+              type="text"
+              value={answers[index]}
+              onChange={(e) => handleAnswerChange(index, e)}
+              placeholder="Your Answer"
+            />
+          </div>
+        ))}
+        <button onClick={handleSubmitAnswer}>Submit</button>
+      </form>
+    </div>
+
 </>
 
     
