@@ -96,27 +96,25 @@ function Profile() {
     const [formTitle, setFormTitle] = React.useState(''); // New state for survey form title
     const debouncedFormTitle = useDebounce(formTitle);
 
-    const [question, setQuestion] = useState(new Array(3).fill(''));
+    const [question, setQuestion] = useState(new Array());
 
     const { config: writeQuestion } = usePrepareContractWrite({
         address: configFile.CONTRACT_ADDRESS,
         abi: abi,
         functionName: 'createSurveyForm',
         args: [debouncedFormTitle, questions],
+        onSuccess(data) {
+            console.log('Success Data Bug', questions)
+        },
     });
 
     const { data: writeQuestion_data, isLoading: writeQuestion_isloading, isSuccess: writeQuestion_isSuccess, write: writeQuestion_write } = useContractWrite(writeQuestion);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    
-        
-        console.log("allQuestions: ", question);
       
         setQuestion(questions);
         console.log("questions: ", questions);
-    
-        // Perform the contract write operation
         writeQuestion_write?.();
     };
 
@@ -124,13 +122,9 @@ function Profile() {
     /*
         add response
     */
-    
-
      /*
         get all question
-    */
-
-       
+    */ 
         /* */
    
     const { data: getQuestionsForForm } = useContractRead({
@@ -332,3 +326,4 @@ function Profile() {
 }
 
 export default Profile;
+
