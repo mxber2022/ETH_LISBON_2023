@@ -131,7 +131,7 @@ function Profile() {
     */
 
        
-        /* 
+        /* */
    
         const { data: getQuestionsForForm } = useContractRead({
             address: configFile.CONTRACT_ADDRESS,
@@ -144,7 +144,8 @@ function Profile() {
         })
 
     console.log("getQuestionsForForm: ", getQuestionsForForm);
-    const [answers, setAnswers] = useState(new Array(getQuestionsForForm.length).fill(''));
+
+    const [answers, setAnswers] = useState(new Array().fill(''));
 
     const { config: config_addResponses } = usePrepareContractWrite({
         address: configFile.CONTRACT_ADDRESS,
@@ -167,7 +168,7 @@ function Profile() {
         e.preventDefault();
         addResponses_write?.();
     };
-*/
+
 
 /****************************************************************/
     return (
@@ -291,23 +292,38 @@ function Profile() {
             
             }
 
-{/*<div>
-      <h2>Survey Form</h2>
-      <form>
-        {getQuestionsForForm.map((question, index) => (
-          <div key={index}>
-            <p>{question}</p>
-            <input
-              type="text"
-              value={answers[index]}
-              onChange={(e) => handleAnswerChange(index, e)}
-              placeholder="Your Answer"
-            />
-          </div>
-        ))}
-        <button onClick={handleSubmitAnswer}>Submit</button>
-      </form>
-        </div>*/}
+            {    
+
+            getQuestionsForForm ?
+            
+            <> 
+                <div>
+                    <h2>Survey Form</h2>
+                    <form>
+                        {getQuestionsForForm.map((question, index) => (
+                        <div key={index}>
+                            <p>{question}</p>
+                            <input
+                            type="text"
+                            value={answers[index]}
+                            onChange={(e) => handleAnswerChange(index, e)}
+                            placeholder="Your Answer"
+                            />
+                        </div>
+                        ))}
+                        <button onClick={handleSubmitAnswer}>Submit</button>
+                    </form>
+                </div>
+            </> 
+            
+            : 
+            
+            <> </>
+
+              
+                
+                
+            }
 
 </>
 
