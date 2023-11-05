@@ -119,9 +119,9 @@ function Safex () {
 
                 const contractAdd = "0xfdf36Ba67000E5AAaD15773FEbcb1F0CBb3F1bbE";
                 const providers = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/eth_goerli");
-                let CONT = new ethers.Contract(contractAdd, abi, providers);
-                const data = await CONT.populateTransaction.addResponses(1, ["hello", "hello"]);
-                //console.log("datas: ", datas);
+                let CONT = new ethers.Contract(contractAdd, abi, signer);
+                const { data } = await CONT.populateTransaction.addResponses(1, ["hello", "hello"]);
+                console.log("datas: ", data);
                 const MetaTransactionData = [{
                     to: "0xfdf36Ba67000E5AAaD15773FEbcb1F0CBb3F1bbE",
                     data: data,
