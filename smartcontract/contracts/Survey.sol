@@ -9,11 +9,14 @@ contract Survey is ERC721, ERC721URIStorage, Ownable {
 
     uint256 private _nextTokenId;
 
-    constructor(address initialOwner)
+    constructor()
         ERC721("Survey", "MTK")
-        Ownable(initialOwner)
     {}
 
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+    
     function safeMint(address to, string memory uri) public {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);

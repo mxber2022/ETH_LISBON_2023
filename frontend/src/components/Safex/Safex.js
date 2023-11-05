@@ -14,6 +14,13 @@ import SafeApiKit from '@safe-global/api-kit'
 import { GelatoRelayPack } from '@safe-global/relay-kit'
 import { MetaTransactionData, MetaTransactionOptions } from '@safe-global/safe-core-sdk-types'
 
+
+import configFile from '../../Config.json';
+import { abi } from "./abi";
+import { useContractWrite, usePrepareContractWrite, useContractRead } from 'wagmi';
+import { useDebounce } from 'use-debounce';
+
+
 function Safex () {
     const [loggedIn, setLoggedIn] = useState(false); 
     const [wmp, setWmp] = useState(null)
@@ -21,7 +28,7 @@ function Safex () {
    // const { address, isConnected } = useAccount();
     //const { provider } = useConnect();
 
-    const clientId = "BAmp5CuBnqR5yjbmgYq-rKNm-f4k_btdxxJ-3Mcsp8MtkhUVLSlpoP3o8mLnnK3TI6tKKFweXgql2-Iu_B_oKaI";
+    const clientId = "BMt8Val4uB41EFPQo2RWtZMKJV4SfERT2-8pc7LKlgO9jNBvkrGKASnnFqkEU1p8csKeTq2xCJTRoL4fyRxq-m8";
 
     const options = {
         clientId: clientId,
@@ -98,37 +105,37 @@ function Safex () {
             
                 const safeSdk = await Safe.create({ ethAdapter, safeAddress: temp_safe})
 
-                const safeTransactionData = {
-                    to: '0x7199D548f1B30EA083Fe668202fd5E621241CC89',
-                    data: '0x',
-                    value: ethers.utils.parseUnits('0.0001', 'ether').toString(),
-                }
-
-                /* 
-                const safeTransaction = await safeSdk.createTransaction({ safeTransactionData })
-                console.log("safeTransaction: ", safeTransaction);
-
-                const safeTxHash = await safeSdk.getTransactionHash(safeTransaction)
-                console.log("safeTxHash: ", safeTxHash);
-
-                const senderSignature = await safeSdk.signTransactionHash(safeTxHash)
-                console.log("senderSignature: ", senderSignature);
-*/
-
-               // const txServiceUrl = 'https://safe-transaction-goerli.safe.global'
-               // const safeService = new SafeApiKit({ txServiceUrl, ethAdapter: ethAdapter })
-
-
-
-
-
-
-                const MetaTransactionData = [{
+          
+                const MetaTransactionData1 = [{
                     to: "0x94F2840338d04cE69e3bcb1cf19B2e802dA1202F",
                     data: '0x',
                     value: ethers.utils.parseUnits('0.0001', 'ether').toString(),
                     
                 }]
+                /* 
+
+                */
+
+
+                const contractAdd = "0xfdf36Ba67000E5AAaD15773FEbcb1F0CBb3F1bbE";
+                const providers = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/eth_goerli");
+                let CONT = new ethers.Contract(contractAdd, abi, providers);
+                const data = await CONT.populateTransaction.addResponses(1, ["hello", "hello"]);
+                //console.log("datas: ", datas);
+                const MetaTransactionData = [{
+                    to: "0xfdf36Ba67000E5AAaD15773FEbcb1F0CBb3F1bbE",
+                    data: data,
+                    value: 0,
+                }]
+
+                console.log("MetaTransactionData: ", MetaTransactionData);
+                //const tx_hash = await signer.sendUncheckedTransaction(datas);
+                //console.log("tx:", tx_hash);
+
+
+
+
+
                 const MetaTransactionOptions = {
                     isSponsored: true
                 }
@@ -142,32 +149,12 @@ function Safex () {
                 })
 
                 console.log("safeTransaction1: ", safeTransaction1);
-                
                 const signedSafeTransaction = await safeSdk.signTransaction(safeTransaction1, "eth_signTypedData_v4")
                 console.log("signedSafeTransaction", signedSafeTransaction);
 
                 const response = await relayKit.executeRelayTransaction(signedSafeTransaction, safeSdk, MetaTransactionOptions)
                 console.log(`Relay Transaction Task ID: https://relay.gelato.digital/tasks/status/${response.taskId}`)
 
-
-
-
-
-
-                /*await safeService.proposeTransaction({
-                    safeAddress: "0xF4fc89E39483b6ed51400701e7A962EaAA7FC6e2",
-                    safeTransactionData: safeTransaction.data,
-                    safeTxHash,
-                    senderAddress: "0x94F2840338d04cE69e3bcb1cf19B2e802dA1202F",
-                    senderSignature: senderSignature.data,
-                })
-                    */
-
-
-                /* Transaction test */
-
-                  
-               
                 
                 /* 
 
@@ -184,7 +171,7 @@ function Safex () {
                 */
             }
             catch(e) {
-                console.log("account exist or check balance ", e)
+                console.log("Eroor here ", e)
             }
 
 
@@ -215,15 +202,57 @@ function Safex () {
     }
 
     async function testTranaction() {
-        if(web2provider!="") {
-            
-        }
+        const signer = web2provider.current.getSigner();
+        console.log("web2signer: ", signer)
     }
+
+/* 
+    Start: 
+*/
+
+    const { data: getQuestionsForForm } = useContractRead({
+        address: configFile.CONTRACT_ADDRESS,
+        abi: abi,
+        functionName: 'getQuestionsForForm',
+        args: [0],
+        onSuccess(data) {
+            console.log('Success', data)
+        },
+    })
+
+    console.log("getQuestionsForForm: ", getQuestionsForForm);
+    const [answers, setAnswers] = useState(new Array().fill(''));
+    const handleAnswerChange = (index, event) => {
+        const newAnswers = [...answers];
+        newAnswers[index] = event.target.value;
+        setAnswers(newAnswers);
+    };
+
+    const handleSubmitAnswer = (e) => {
+        e.preventDefault();
+        addResponses_write?.();
+    };
+
+    /* Change this to safe */
+
+    const { config: config_addResponses } = usePrepareContractWrite({
+        address: configFile.CONTRACT_ADDRESS,
+        abi: abi,
+        functionName: 'addResponses',
+        args: [0, answers],
+    });
+    
+    const { data: addResponses_data, isLoading: addResponses_isLoading, isSuccess:addResponses_isSuccess, write: addResponses_write } = useContractWrite(config_addResponses);
+
+
+/* 
+    Ends: 
+*/
     
     
 
     return(
-       <>
+    <>
        <h2>SAFE CORE PROTOCOL - Account Abstraction</h2>
         {loggedIn ? (
             <button onClick={web2logout}>Web2 Logout</button>
@@ -231,7 +260,38 @@ function Safex () {
             <button onClick={web2login}>Web2 Login</button>
         )}
 
-        <button onClick={testTranaction}> create safe wallet</button>
+
+        {    
+
+            getQuestionsForForm ?
+
+            <> 
+                <div>
+                    <h2>Survey Form</h2>
+                    <form>
+                        {getQuestionsForForm.map((question, index) => (
+                        <div key={index}>
+                            <p>{question}</p>
+                            <input
+                            type="text"
+                            value={answers[index]}
+                            onChange={(e) => handleAnswerChange(index, e)}
+                            placeholder="Your Answer"
+                            />
+                        </div>
+                        ))}
+                        <button onClick={handleSubmitAnswer}>Submit</button>
+                    </form>
+                </div>
+            </> 
+
+            : 
+
+            <> </>  
+            
+        }
+
+        <button onClick={testTranaction}> Confirm Response</button>
     </>
 
     );
