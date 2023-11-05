@@ -18,4 +18,7 @@ npx hardhat verify --network scroll-testnet
 
 `#` Contract deployment address
 
-
+1. Gnosis Chain - 0xD33739924BE8FB96bea20c6F782EC502b3A69A66
+2. Neon
+3. Core
+4. Fuel

@@ -131,7 +131,7 @@ function Profile() {
         address: configFile.CONTRACT_ADDRESS,
         abi: abi,
         functionName: 'getQuestionsForForm',
-        args: [2],
+        args: [0],
         onSuccess(data) {
             console.log('Success', data)
         },
